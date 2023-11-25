@@ -8,6 +8,7 @@ const routes = require("./src/routes")
 
 const initializePassport = require("./passportConfig");
 const app = express();
+app.use(session({ secret: 'somevalue' }))
 
 initializePassport(passport);
 const port = process.env.PORT || 3000;
@@ -22,7 +23,7 @@ app.use(
     session({
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: false
+      saveUninitialized: false,
     })
 );
 app.use(flash());

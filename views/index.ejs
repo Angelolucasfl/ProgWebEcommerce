@@ -1,26 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Home</title>
+    <link rel="stylesheet" href="styles/home.css">
   </head>
   <body>
-    <h1>Home</h1>
+    <header>
+      <div class="logo">
+        <span>SMD Papelaria</span>
+      </div>
+      <div class="slogan">
+        <span>O melhor lugar para auxiliar nos seus estudos</span>
+      </div>
+      <div class="login_button">
+        <div>
+          <img src="../src/img/user.svg" alt="user">
+        </div>
+        <div>
+          <span>Bem-vindo(a)!</span>
+          <a href="/users/login">Login/Cadastro</a>
+        </div>
+      </div>
+      <div class="car_container">
+        <div><img src="../src/img/shopping-cart-simple.svg" alt="carrinho de compra" width="40" height="40"></div>
+        <a href="#">Seu Carrinho</a>
+      </div>
+    </header>
+    <div class="iconContainer">
+      
+      <div>
+
+        <section class="img">
+          <img src="../src/img/papelaria-1.jpg" alt="papelaria" width="680px" height="248px">
+        </section>
+
+        <div class="overlay">          
+        </div>
+
+      </div>
+      
+      <div class="icons">
+        <img src="../src/img/book-open.svg" alt="livro aberto" width="80" height="80">
+        <img src="../src/img/book-bookmark.svg" alt="livro com marcador" width="80" height="80">
+        <img src="../src/img/chalkboard.svg" alt="quadro branco" width="80" height="80">
+        <img src="../src/img/code.svg" alt="código" width="80" height="80">
+        <img src="../src/img/video.svg" alt="ícone de vídeo" width="80" height="80">
+        <img src="../src/img/certificate.svg" alt="certificado" width="80" height="80">
+      </div>
+
+    </div>
+    
     <ul>
       <% products.forEach(product => { %>
-        <li><%= product.categoria_nome %></li>
-        <li><%= product.nome %></li>
-        <li><%= product.preco %></li>
-        <li><%= product.descricao %></li>
-        <li><%= product.foto %></li>
-        <li><%= product.quantidade %></li>
+        <li class="product_category"><%= product.categoria_nome %></li>
+        <hr>
+        <div class="product_list">
+          <div class="product">
+            <li class="product_photo"><%= product.foto %></li>
+            <li class="product_name"><%= product.nome %></li>
+            <li class="product_price"><%= product.preco %></li>
+            <li class="product_quantity"><%= product.quantidade %></li>
+          </div>
+        </div>
 
       <% }) %>
-    </ul>
-    
+    </ul>  
 
-    <a href="/users/login">Login</a>
+    
   </body>
 </html>

@@ -1,0 +1,124 @@
+:root {
+  --primary-1: #ACC1E8;
+  --primary-2: #6983EA;
+  --primary-3: #224AE6;
+  --primary-4: #212D5F;
+
+  --white: #FDFBFE;
+  --black: #000000;
+  --gray: #868E96;
+  --red: #C72A2A;
+}
+
+body{
+  margin: 0;
+  cursor: default;
+}
+
+header {
+  background-color: var(--primary-2);
+  padding: 42px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;;
+  align-items: center;
+  
+}
+
+a{
+  border: none;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000000;
+}
+
+.logo {
+  font-size: 40px;  
+}
+
+.slogan{
+  font-size: 24px;
+}
+
+.login_button{
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  
+}
+
+.car_container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconContainer{
+  display: flex;
+  width: full;
+}
+
+.img{
+  position: relative;
+}
+
+.overlay{
+  position: absolute;
+  background: var(--black, #000);
+  width: 680px;
+  height: 248px;
+  top: 131px;
+  opacity: 0.5;
+}
+
+.icons{
+  background-color: #000000;
+  opacity: 0.9;
+  width: 1440px;
+  height: 248px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;  
+  
+}
+
+.product_category{
+  font-size: 32px;
+  font-weight: 600;
+  color: #212D5F;
+  
+}
+
+hr{
+  color:#212D5F;
+  height: 2px;
+  background-color: #212D5F;
+  
+}
+
+.product_list{
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+.product.photo{
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.product_name{
+  font-size: 24px;  
+}
+
+.product_price{
+  color: var(--primary---3, #6983EA);
+  font-size: 24px;  
+}
+
+.product_quantity{
+  color: var(--primary---1, #ACC1E8);
+  font-size: 24px;
+}
