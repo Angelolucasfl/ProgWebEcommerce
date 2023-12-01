@@ -13,6 +13,20 @@ const getUpdateUser = (req, res) => {
   res.render("updateUser.ejs");
 };
 
+const getPurchases = (req, res, next) => {
+  pool.query(
+    'SELECT venda.*, venda_produto.produto_id, venda_produto.quantidade, produtos.nome as produto_nome, produtos.preco as valor_unitario FROM venda JOIN venda_produto ON venda.id = venda_produto.venda_id JOIN produtos ON venda_produto.produto_id = produtos.id',
+    (error, allPurchaseResults) => {
+      if (error) {
+        return next(error);
+      }
+      const allPurchases = allPurchaseResults.rows;
+      res.render('userPurchases', { allPurchases });
+    }
+  );
+};
+
+
 const getUpdateProduct = (req, res) => {
   const productId = req.params.id; 
 
@@ -70,10 +84,22 @@ const getDashboard = (req, res, next) => {
       const products = results.rows;
 
       if (req.isAuthenticated()) {
+        const userId = req.user.id;
         const isAdmin = req.user.adm;
 
-        if (isAdmin) {
-          // Obtém também as categorias para o admin
+        if (!isAdmin) {
+          pool.query(
+            'SELECT venda.*, venda_produto.produto_id, venda_produto.quantidade, produtos.nome as produto_nome, produtos.preco as valor_unitario FROM venda JOIN venda_produto ON venda.id = venda_produto.venda_id JOIN produtos ON venda_produto.produto_id = produtos.id WHERE venda.usuario_id = $1',
+            [userId],
+            (error, userPurchaseResults) => {
+              if (error) {
+                return next(error);
+              }
+              const userPurchases = userPurchaseResults.rows;
+              res.render('dashboard', { user: req.user, products, userPurchases });
+            }
+          );
+        } else {
           pool.query('SELECT * FROM categorias', (error, categoryResults) => {
             if (error) {
               return next(error);
@@ -81,8 +107,6 @@ const getDashboard = (req, res, next) => {
             const categories = categoryResults.rows;
             res.render('adminDashboard', { user: req.user, products, categories });
           });
-        } else {
-          res.render('dashboard', { user: req.user });
         }
       } else {
         res.redirect('/users/login');
@@ -176,9 +200,13 @@ const getProducts = (req, res, next) => {
         return next(err);
       }
 
+      if(!req.session.cart){
+        req.session.cart = [];
+      }
+
       const products = results.rows;
 
-      res.render("index", { products, user: req.user });
+      res.render("index", { products, cart : req.session.cart, user: req.user });
     }
   );
 };
@@ -371,6 +399,99 @@ const createCategory = (req, res) => {
   );
 };
 
+const addCart = (req, res) => {
+  const id = req.body.id;
+	const nome = req.body.nome;
+	const preco = req.body.preco;
+	let count = 0;
+
+	for(let i = 0; i < req.session.cart.length; i++){
+		if(req.session.cart[i].id === id){
+			req.session.cart[i].quantidade += 1;
+			count++;
+		}
+	}
+
+	if(count === 0){
+		const cart_data = {
+			id : id,
+			nome : nome,
+			preco : parseFloat(preco),
+			quantidade : 1
+		};
+
+		req.session.cart.push(cart_data);
+	}
+
+	res.redirect("/");
+};
+
+const checkout = async (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.redirect("/users/login");
+    }
+    const userId = req.user.id;
+    await pool.query('BEGIN');
+
+    const newSale = await pool.query(
+      `INSERT INTO venda (data, usuario_id)
+      VALUES (CURRENT_TIMESTAMP, $1)
+      RETURNING id`,
+      [userId]
+    );
+
+    const saleId = newSale.rows[0].id;
+    for (const item of req.session.cart) {
+      await pool.query(
+        `INSERT INTO venda_produto (venda_id, produto_id, quantidade)
+        VALUES ($1, $2, $3)`,
+        [saleId, item.id, item.quantidade]
+      );
+
+      await pool.query(
+        `UPDATE produtos
+        SET quantidade = quantidade - $1
+        WHERE id = $2`,
+        [item.quantidade, item.id]
+      );
+    }
+
+    await pool.query('COMMIT');
+    req.session.cart = [];
+
+    res.redirect("/get_user_purchases");
+  } catch (error) {
+    await pool.query('ROLLBACK');
+
+    console.error(error);
+    req.flash("error_msg", "Erro ao processar o checkout.");
+    res.redirect("/");
+  }
+};
+
+const deletePurchases = (req, res) => {
+  const vendaId = req.params.id;
+
+  pool.query('DELETE FROM venda_produto WHERE venda_id = $1', [vendaId], (error) => {
+    if (error) {
+      console.error('Erro ao deletar registros relacionados na venda_produto:', error);
+      res.status(500).send('Erro ao deletar registros relacionados na venda_produto');
+    } else {
+      pool.query('DELETE FROM venda WHERE id = $1', [vendaId], (err, result) => {
+        if (err) {
+          console.error('Erro ao deletar venda:', err);
+          res.status(500).send('Erro ao deletar venda');
+        } else {
+          console.log('Venda deletada com sucesso');
+          res.redirect('/users/purchases');
+        }
+      });
+    }
+  });
+};
+
+
 module.exports = {
   getLogin,
   getRegister,
@@ -391,4 +512,8 @@ module.exports = {
   deleteCategory,
   getCreateCategory,
   createCategory,
+  addCart,
+  checkout,
+  getPurchases,
+  deletePurchases,
 };

@@ -13,6 +13,11 @@ router.get("/category/update/:id", controller.getCategoryToUpdate);
 router.get("/users/logout", controller.logout);
 router.get("/category/create", controller.getCreateCategory);
 router.get("/product/create", controller.getCreateProduct);
+router.get("/users/purchases", controller.getPurchases);
+
+router.post("/add_cart", controller.addCart);
+router.post("/checkout", controller.checkout);
+router.post("/delete_purchase/:id", controller.deletePurchases);
 
 router.post("/create-product", controller.createProduct);
 router.post("/create-category", controller.createCategory);

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Purchases</title>
+</head>
+<body>
+    <h1>User Purchases</h1>
+    
+    <ul>
+        <% allPurchases.forEach(purchase => { %>
+            <li>
+                Venda ID: <%= purchase.id %>
+                Data da venda: <%= purchase.data %>
+                Id do usuario: <%= purchase.usuario_id %>
+                quantidade: <%= purchase.quantidade %>
+                <form action="/delete_purchase/<%= purchase.id %>" method="POST">
+                    <input type="submit" value="Delete">
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>

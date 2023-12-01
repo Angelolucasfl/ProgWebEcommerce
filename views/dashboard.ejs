@@ -12,28 +12,44 @@
   </head>
   <body>
     <h1>Dashboard</h1>
-
+  
     <ul>
       <% if (typeof errors != 'undefined') { %> <% errors.forEach(error => { %>
       <li><%= error.message %></li>
       <% }) %> <% } %>
     </ul>
-
+  
     <ul>
       <% if(messages.success_msg) { %>
       <li><%= messages.success_msg %></li>
       <% } %>
     </ul>
-
+  
     <a href="/users/logout">Logout</a>
-
+  
     <h4>Olá <%= user.nome %></h4>
-
+  
+    <div>
+      <h2>Minhas Compras</h2>
+      <ul>
+        <% userPurchases.forEach(purchase => { %>
+        <li>
+          <p>ID da compra: <%= purchase.venda_id %></p>
+          <p>Data: <%= purchase.data %></p>
+          <p>Produto: <%= purchase.produto_nome %></p>
+          <p>Quantidade: <%= purchase.quantidade %></p>
+          <p>Valor Unitário: <%= purchase.valor_unitario %></p>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+  
     <form action="/users/deleteAccount" method="POST">
       <input type="submit" value="Deletar conta" />
     </form>
-
+  
     <a href="/">Home</a>
     <a href="/users/update-profile">Editar perfil</a>
   </body>
+  
 </html>

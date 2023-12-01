@@ -22,7 +22,8 @@ app.use(
     session({
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: false
+      saveUninitialized: true,
+      cookie : { secure : false }
     })
 );
 app.use(flash());
@@ -54,6 +55,10 @@ app.use("/create-category", routes, checkAuthenticated);
 app.use("/delete-category/:id", routes, checkAuthenticated);
 app.use("/delete-product/:id", routes, checkAuthenticated);
 app.use("/users/logout", routes);
+app.use("/add_cart", checkAuthenticated, routes);
+app.use("/checkout", routes, checkAuthenticated);
+app.use("/users/purchases", routes, checkAuthenticated);
+app.use("/delete_purchase/:id", routes, checkAuthenticated);
 
 app.use("/users/register", routes);
 app.use("/users/editProfile", checkAuthenticated, routes);
@@ -66,6 +71,19 @@ app.post("/users/login", passport.authenticate("local", {
     failureRedirect: "/users/login",
     failureFlash: true
 }));
+
+app.get('/remove_item', (request, response) => {
+  const id = request.query.id;
+
+  for (let i = 0; i < request.session.cart.length; i++) {
+    if (request.session.cart[i].id === id) {
+      request.session.cart.splice(i, 1);
+      break; 
+    }
+  }
+
+  response.redirect("/");
+});
 
 function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -80,6 +98,5 @@ function checkAuthenticated(req, res, next) {
     }
     res.redirect("/users/login");
   }
-
 
 app.listen(port, () => console.log(`ouvindo na porta ${port}`));

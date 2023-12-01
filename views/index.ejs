@@ -10,16 +10,69 @@
     <h1>Home</h1>
     <ul>
       <% products.forEach(product => { %>
-        <li><%= product.categoria_nome %></li>
+        <img src="<%= product.foto %>">
         <li><%= product.nome %></li>
         <li><%= product.preco %></li>
-        <li><%= product.descricao %></li>
-        <li><%= product.foto %></li>
-        <li><%= product.quantidade %></li>
+
+        <form method="post" action="/add_cart">
+          <input type="hidden" name="id" value="<%= product.id %>" />
+
+          <input type="hidden" name="nome" value="<%= product.nome %>" />
+
+          <input type="hidden" name="preco" value="<%= product.preco %>" />
+
+          <input type="submit" value="Adicionar ao carrinho" />
+        </form>
 
       <% }) %>
     </ul>
     
+    <tr>
+      <th>Nome do Item</th>
+      <th>Quantidade</th>
+      <th>Preço por unidade</th>
+      <th>Valor Total</th>
+      <th>Remover</th>
+  </tr>
+  <% 
+  if (cart.length > 0) {
+      let total = 0;
+  
+      cart.forEach(item => {
+  %>
+  <br>
+  <tr>
+      <td><%= item.nome %></td>
+      <td><%= item.quantidade %></td>
+      <td><%= item.preco %></td>
+      <td><%= parseFloat(item.quantidade) * parseFloat(item.preco) %></td>
+      <td><button type="button" onclick="remove_item('<%= item.id %>')">Remove</button></td>
+      <br>
+  </tr>
+  <%
+          total += parseFloat(item.quantidade) * parseFloat(item.preco);
+      })
+  %>
+  <tr>
+      <td><b>Total</b></td>
+      <td><%= total.toFixed(2) %></td>
+      <td>&nbsp;</td>
+  </tr>
+  <%
+  } else {
+  %>
+  <tr>
+      <td>Nenhum item no carrinho</td>
+  </tr>
+  <%
+  }
+  %>
+  
+  <% if (cart.length > 0) { %>
+    <form method="post" action="/checkout">
+      <input type="submit" value="Checkout" />
+    </form>
+  <% } %>
 
     <% if (user) { %>
       <a href="/users/logout">Logout</a>
@@ -27,4 +80,14 @@
       <a href="/users/login">Login</a>
     <% } %>
   </body>
+
 </html>
+
+
+<script>
+  function remove_item(id){
+      if(confirm("Quer mesmo remover?")){
+          window.location.href = `/remove_item?id=${id}`;
+      }
+  }
+</script>
